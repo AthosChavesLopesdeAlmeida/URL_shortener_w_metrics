@@ -1,0 +1,27 @@
+{
+  "name": "url-shortener",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:packages": "npm run build -w @shortener/shared -w @shortener/db",
+    "build:apps": "npm run build -w @shortener/api -w @shortener/web -w @shortener/worker",
+    "build": "npm run build:packages && npm run build:apps",
+    "lint": "eslint . && npm run lint -w @shortener/api -w @shortener/web",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "infra:up": "docker compose -f docker-compose.dev.yml up -d",
+    "infra:down": "docker compose -f docker-compose.dev.yml down"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^26.6.6",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.10",
+    "typescript": "5.9",
+    "typescript-eslint": "^8.72.1"
+  }
+}

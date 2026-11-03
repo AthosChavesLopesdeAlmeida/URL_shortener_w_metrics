@@ -15,4 +15,9 @@ export class UsersRepository {
     const [user] = await this.db.insert(users).values(data).returning();
     return user;
   }
+
+  async findById(id: string) {
+    const [user] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+    return user ?? null;
+  }
 }

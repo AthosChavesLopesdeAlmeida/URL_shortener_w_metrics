@@ -1,0 +1,18 @@
+:8080 {
+    # 1 API
+    @api path /api/*
+    handle @api {
+        reverse_proxy {$API_UPSTREAM:localhost:3001}
+    }
+
+    # 2 Redirect do link curto: exatamente 7 caracteres Base62
+    @shortcode path_regexp ^/[0-9A-Za-z]{7}$
+    handle @shortcode {
+        reverse_proxy {$API_UPSTREAM:localhost:3001}
+    }
+
+    # 3 Todo o resto é o front-end
+    handle {
+        reverse_proxy {$WEB_UPSTREAM:localhost:3000}
+    }
+}

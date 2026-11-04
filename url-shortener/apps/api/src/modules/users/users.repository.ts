@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { eq, type Database, users } from '@shortener/db';
+import { eq, and, isNull, type Database, users } from '@shortener/db';
 import { DB } from '../../database/database.module.js';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class UsersRepository {
   }
 
   async findById(id: string) {
-    const [user] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+    const [user] = await this.db.select().from(users).where(and(eq(users.id, id), isNull(users.deletedAt))).limit(1);
     return user ?? null;
   }
 }

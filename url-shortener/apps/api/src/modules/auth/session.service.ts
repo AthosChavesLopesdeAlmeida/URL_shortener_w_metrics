@@ -15,9 +15,20 @@ export class SessionService {
     return `session:${createHash('sha256').update(token).digest('hex')}`;
   }
 
+  private userKey(userId: string) {
+    return `user_sessions:${userId}`;
+  }
+
   async create(userId: string): Promise<string> {
     const token = randomBytes(32).toString('base64url');
-    await this.redis.set(this.key(token), userId, 'EX', SESSION_TTL_SECONDS);
+    const key = this.key(token);
+
+    await this.redis
+      .multi()
+      .set(key, userId, 'EX', SESSION_TTL_SECONDS)
+      .sadd(this.userKey(userId), key)
+      .expire(this.userKey(userId), SESSION_TTL_SECONDS) // todo o cache/sessão com TTL (decisão 001)
+      .exec();
     return token;
   }
 
@@ -26,6 +37,15 @@ export class SessionService {
   }
 
   async destroy(token: string): Promise<void> {
-    await this.redis.del(this.key(token));
+    const key = this.key(token);
+    const userId = await this.redis.get(key);
+    const tx = this.redis.multi().del(key);
+    if (userId) tx.srem(this.userKey(userId), key);
+    await tx.exec();
+  }
+
+  async destroyAllForUser(userId: string): Promise<void> {
+    const keys = await this.redis.smembers(this.userKey(userId));
+    await this.redis.del(...keys, this.userKey(userId));
   }
 }

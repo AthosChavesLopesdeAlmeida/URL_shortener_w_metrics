@@ -11,7 +11,7 @@ import { CurrentUser } from './current-user.decorator.js';
 import { SESSION_COOKIE, SESSION_TTL_SECONDS } from './session.service.js';
 import { Inject } from '@nestjs/common';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(
     private readonly auth: AuthService,

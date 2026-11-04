@@ -27,7 +27,7 @@ export class AuthService {
 
   async login(input: LoginInput) {
     const user = await this.users.findByEmail(input.email);
-    const valid = user ? await verify(user.passwordHash, input.password) : false;
+    const valid = user && !user.deletedAt ? await verify(user.passwordHash, input.password) : false;
 
     // Mesma mensagem para email inexistente e senha errada (não revela quais emails existem)
     if (!user || !valid) throw new UnauthorizedException('Credenciais inválidas');

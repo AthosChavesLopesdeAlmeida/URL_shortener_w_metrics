@@ -17,7 +17,7 @@ import { AuthGuard } from '../auth/auth.guard.js';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { LinksService } from './links.service.js';
 
-@Controller('links')
+@Controller('api/links')
 @UseGuards(AuthGuard)
 export class LinksController {
   constructor(private readonly links: LinksService) {}

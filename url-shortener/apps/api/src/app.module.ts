@@ -5,8 +5,10 @@ import { UsersModule } from './modules/users/users.module.js';
 import { RedisModule } from './redis/redis.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { LinksModule } from './modules/links/links.module.js';
+import { RedirectModule } from './modules/redirect/redirect.module.js';
+import { AccountModule } from './modules/account/account.module.js';
 
 @Module({
-  imports: [ConfigModule, DatabaseModule, UsersModule, AuthModule, RedisModule, LinksModule]
+  imports: [ConfigModule, DatabaseModule, UsersModule, AuthModule, RedisModule, LinksModule, RedirectModule, AccountModule]
 })
 export class AppModule {}

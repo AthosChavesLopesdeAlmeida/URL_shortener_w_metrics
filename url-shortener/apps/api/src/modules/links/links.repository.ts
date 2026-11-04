@@ -13,6 +13,11 @@ export class LinksRepository {
     return all_links ?? null
   }
 
+  async findByShortCode(shortCode: string) {
+    const [link] = await this.db.select().from(links).where(eq(links.shortCode, shortCode)).limit(1);
+    return link ?? null;
+  }
+
   async getLink (id: string) {
     const [link] = await this.db.select().from(links).where(eq(links.id, id)).limit(1)
     return link ?? null

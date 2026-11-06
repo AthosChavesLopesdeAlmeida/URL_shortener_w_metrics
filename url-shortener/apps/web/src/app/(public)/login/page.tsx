@@ -64,7 +64,7 @@ const Page = () => {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-16">
+    <div className="flex flex-1 items-center justify-center px-6 py-16">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Sign in</CardTitle>
@@ -99,7 +99,7 @@ const Page = () => {
           </form>
         </CardContent>
       </Card>
-    </main>
+    </div>
   )
 }
 

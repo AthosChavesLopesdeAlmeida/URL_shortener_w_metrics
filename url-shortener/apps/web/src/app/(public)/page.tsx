@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center bg-zinc-50 font-sans dark:bg-black pt-12">
+    <div className="flex flex-col flex-1 items-center bg-background text-foreground pt-12">
       <main className="flex w-full max-w-5xl flex-col items-center gap-12 px-6 py-16 pb-40">
         <div className="flex flex-col items-center gap-4 text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">

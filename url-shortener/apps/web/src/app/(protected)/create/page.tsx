@@ -61,7 +61,7 @@ const Page = () => {
   }
 
   return (
-    <div className="flex flex-col flex-1 items-center bg-background text-foreground gap-30 ">
+    <div className="flex flex-col flex-1 items-center bg-background text-foreground gap-30">
         <header className="flex flex-row items-center justify-between w-full h-18 p-4 bg-[#171717]">
           <h1 className="text-4xl font-bold">Link Shortener</h1>
 
@@ -75,7 +75,7 @@ const Page = () => {
             </Button>
 
             <Button size="lg" variant="outline">
-              <Link href="/account">My account</Link>
+              <Link href="/acc">My account</Link>
             </Button>
           </div>
         </header>

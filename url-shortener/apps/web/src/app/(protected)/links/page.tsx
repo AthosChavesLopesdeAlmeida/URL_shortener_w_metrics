@@ -1,7 +1,7 @@
 "use client"
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { api, ApiError } from "@/lib/api-client"
-import { LinkResponse, LinkStatus } from "@shortener/shared";
+import { LinkResponse } from "@shortener/shared";
 
 import Link from "next/link"
 
@@ -50,16 +50,6 @@ const Page = () => {
     setCopiedId(link.id);
     setTimeout(() => setCopiedId((id) => (id === link.id ? null : id)), 1500);
   }
-
-// async function copy(link: LinkResponse) {
-//   try {
-//     await navigator.clipboard.writeText(link.shortUrl);
-//     setCopiedId(link.id);
-//     setTimeout(() => setCopiedId((id) => (id === link.id ? null : id)), 1500);
-//   } catch {
-//     setActionError('Não foi possível copiar o link');
-//   }
-// }
 
   return (
     <div className="flex flex-col flex-1 items-center bg-background text-foreground gap-30">
@@ -133,7 +123,7 @@ const Page = () => {
                                                 <div className="flex flex-row gap-2">                                                    
                                                     <Button variant={"outline"}
                                                     onClick={() => copyLink(link)}>
-                                                        Copy
+                                                        {copiedId === link.id ? 'Copied' : 'Copy'}
                                                     </Button>
                                                     
                                                     <Button variant={"outline"}
@@ -146,7 +136,6 @@ const Page = () => {
                                                         Delete
                                                     </Button>
                                                 </div>
-
                                             </td>
                                         </tr>
                                     )
@@ -158,6 +147,8 @@ const Page = () => {
                     {links?.length === 0 && <p className="text-center pt-4">You haven&#39;t created any link. <Link href="/create" className="underline">Create the first</Link></p>}
 
                     {loading && <p className="text-center pt-4">Loading</p>}
+
+                    {error && <p className="text-red-500 text-center pt-4">{error}</p>}
                 </CardContent>
             </Card>
         </main>

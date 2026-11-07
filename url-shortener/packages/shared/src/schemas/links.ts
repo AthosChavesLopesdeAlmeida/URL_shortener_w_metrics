@@ -14,5 +14,16 @@ export const createLinkSchema = z.object({
   .refine((u) => /^https?:\/\//i.test(u), 'Apenas URLs http ou https'),
 });
 
+export type LinkStatus = 'active' | 'inactive';
+
+export type LinkResponse = {
+  id: string;
+  shortCode: string;
+  shortUrl: string;
+  longUrl: string;
+  status: LinkStatus;
+  createdAt: string; // vem como string ISO no JSON
+};
+
 export type UpdateLinkInput = z.infer<typeof updateLinkSchema>;
 export type CreateLinkInput = z.infer<typeof createLinkSchema>;

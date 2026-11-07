@@ -54,7 +54,7 @@ const Page = () => {
       } else if (err instanceof ApiError && err.status === 400) {
         setErrors(fieldErrors(err));
       } else if (err instanceof ApiError && err.status === 429) {
-        setFormError('To much attempts. Wait a moment and try again');
+        setFormError('Too much attempts. Wait a moment and try again');
       } else {
         setFormError(err instanceof ApiError ? err.message : 'Unexpected error');
       }

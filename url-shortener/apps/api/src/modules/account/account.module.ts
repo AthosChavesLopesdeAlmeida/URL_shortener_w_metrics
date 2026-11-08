@@ -4,9 +4,10 @@ import { UsersModule } from '../users/users.module.js';
 import { AccountController } from './account.controller.js';
 import { AccountRepository } from './account.repository.js';
 import { AccountService } from './account.service.js';
+import { CacheModule } from '../cache/cache.module.js';
 
 @Module({
-  imports: [AuthModule, UsersModule],
+  imports: [AuthModule, UsersModule, CacheModule],
   controllers: [AccountController],
   providers: [AccountService, AccountRepository],
 })

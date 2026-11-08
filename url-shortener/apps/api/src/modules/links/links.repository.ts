@@ -23,12 +23,12 @@ export class LinksRepository {
     return link ?? null
   }
 
-  async delete (id: string,userId: string) {
+  async delete(id: string, userId: string): Promise<string | null> {
     const [row] = await this.db
       .delete(links)
       .where(and(eq(links.id, id), eq(links.userId, userId)))
-      .returning({ id: links.id });
-    return !!row;
+      .returning({ shortCode: links.shortCode });
+    return row?.shortCode ?? null;
   }
 
   async updateStatus(id: string, userId: string, status: LinkStatus) {

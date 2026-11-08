@@ -1,22 +1,47 @@
 import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
+import { LinkCacheService, type CachedLink } from '../cache/link-cache.service.js';
 import { LinksRepository } from '../links/links.repository.js';
 
 const CODE_FORMAT = /^[0-9A-Za-z]{7}$/;
 
 @Injectable()
 export class RedirectService {
-  constructor(private readonly links: LinksRepository) {}
+  constructor(
+    private readonly links: LinksRepository,
+    private readonly cache: LinkCacheService,
+  ) {}
 
-  async resolve(code: string): Promise<string> {
-    // Formato inválido nem chega ao banco (barra scans e rotas como /favicon.ico)
+  async resolve(code: string): Promise<{ url: string; source: 'HIT' | 'MISS' }> {
     if (!CODE_FORMAT.test(code)) throw new NotFoundException();
 
+    // 1) cache
+    const cached = await this.cache.get(code);
+    if (cached) return { url: this.toUrl(cached), source: 'HIT' };
+
+    // 2) miss: Postgres, e então popula o cache (inclusive o "não existe")
     const link = await this.links.findByShortCode(code);
-    if (!link) throw new NotFoundException();
+    if (!link) {
+      await this.cache.setNotFound(code);
+      throw new NotFoundException();
+    }
+    await this.cache.setFound(code, link);
 
-    const expired = link.expiresAt !== null && link.expiresAt.getTime() <= Date.now();
-    if (link.status === 'inactive' || expired) throw new GoneException();
+    return {
+      url: this.toUrl({
+        found: true,
+        longUrl: link.longUrl,
+        status: link.status,
+        expiresAt: link.expiresAt ? link.expiresAt.toISOString() : null,
+      }),
+      source: 'MISS',
+    };
+  }
 
-    return link.longUrl;
+  // Mesma regra para hit e miss: o estado do link é avaliado a cada requisição
+  private toUrl(entry: CachedLink): string {
+    if (!entry.found) throw new NotFoundException();
+    const expired = entry.expiresAt !== null && new Date(entry.expiresAt).getTime() <= Date.now();
+    if (entry.status === 'inactive' || expired) throw new GoneException();
+    return entry.longUrl;
   }
 }

@@ -9,6 +9,7 @@ import { AuthGuard } from './auth.guard.js';
 import { AuthService } from './auth.service.js';
 import { CurrentUser } from './current-user.decorator.js';
 import { SESSION_COOKIE, SESSION_TTL_SECONDS } from './session.service.js';
+import { RateLimit } from '../rate-limiter/rate-limiter.decorator.js';
 import { Inject } from '@nestjs/common';
 
 @Controller('api/auth')
@@ -20,11 +21,13 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @RateLimit('register')
   register(@Body(new ZodValidationPipe(registerSchema)) body: RegisterInput) {
     return this.auth.register(body);
   }
 
   @Post('login')
+  @RateLimit('login')
   @HttpCode(200)
   async login(
     @Body(new ZodValidationPipe(loginSchema)) body: LoginInput,

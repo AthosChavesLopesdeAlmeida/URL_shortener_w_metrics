@@ -7,8 +7,17 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { LinksModule } from './modules/links/links.module.js';
 import { RedirectModule } from './modules/redirect/redirect.module.js';
 import { AccountModule } from './modules/account/account.module.js';
+import { RateLimiterModule } from './modules/rate-limiter/rate-limiter.module.js';
 
 @Module({
-  imports: [ConfigModule, DatabaseModule, UsersModule, AuthModule, RedisModule, LinksModule, RedirectModule, AccountModule]
+  imports: [ConfigModule, 
+    DatabaseModule, 
+    UsersModule, 
+    AuthModule, 
+    RedisModule, 
+    LinksModule, 
+    RedirectModule, 
+    AccountModule, 
+    RateLimiterModule]
 })
 export class AppModule {}

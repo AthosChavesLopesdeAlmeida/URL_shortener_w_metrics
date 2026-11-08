@@ -8,6 +8,7 @@ import {
 import { ENV } from '../../config/config.module.js';
 import type { Env } from '../../config/env.js';
 import { LinksRepository } from './links.repository.js';
+import { LinkCacheService } from '../cache/link-cache.service.js';
 import { generateShortCode } from './short-code.js';
 
 type LinkStatus = 'active' | 'inactive';
@@ -16,6 +17,7 @@ type LinkStatus = 'active' | 'inactive';
 export class LinksService {
   constructor(
     private readonly links: LinksRepository,
+    private readonly cache: LinkCacheService,
     @Inject(ENV) private readonly env: Env,
   ) {}
 
@@ -24,7 +26,10 @@ export class LinksService {
 
     for (let attempt = 0; attempt < 5; attempt++) {
       const link = await this.links.create({ shortCode: generateShortCode(), longUrl, userId });
-      if (link) return this.toResponse(link);
+      if (link) {
+        await this.cache.invalidate(link.shortCode);
+        return this.toResponse(link);
+      } 
     }
     throw new InternalServerErrorException('Unable to generate a unique code');
   }
@@ -37,14 +42,14 @@ export class LinksService {
   async setStatus(id: string, userId: string, status: LinkStatus) {
     const link = await this.links.updateStatus(id, userId, status);
     if (!link) throw new NotFoundException('Link not found');
-    // Fase 3: invalidar a chave do cache aqui
+    await this.cache.invalidate(link.shortCode);
     return this.toResponse(link);
   }
 
   async remove(id: string, userId: string) {
-    const deleted = await this.links.delete(id, userId);
-    if (!deleted) throw new NotFoundException('Link not found');
-    // Fase 3: invalidar a chave do cache aqui
+    const shortCode = await this.links.delete(id, userId);
+    if (!shortCode) throw new NotFoundException('Link não encontrado');
+    await this.cache.invalidate(shortCode);
   }
 
   // Bloqueia links que apontam para o próprio encurtador (evita loops de redirect)

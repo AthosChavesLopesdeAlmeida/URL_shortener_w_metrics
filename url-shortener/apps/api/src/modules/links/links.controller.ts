@@ -16,6 +16,7 @@ import { ZodValidationPipe } from '../../common/zod-validation.pipe.js';
 import { AuthGuard } from '../auth/auth.guard.js';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { LinksService } from './links.service.js';
+import { RateLimit } from '../rate-limiter/rate-limiter.decorator.js';
 
 @Controller('api/links')
 @UseGuards(AuthGuard)
@@ -23,6 +24,7 @@ export class LinksController {
   constructor(private readonly links: LinksService) {}
 
   @Post()
+  @RateLimit('createLink')
   create(
     @CurrentUser() userId: string,
     @Body(new ZodValidationPipe(createLinkSchema)) body: CreateLinkInput,

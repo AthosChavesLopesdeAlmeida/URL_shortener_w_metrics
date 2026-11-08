@@ -4,16 +4,19 @@ import request from 'supertest';
 
 export const PASSWORD = 'senha12345';
 
+export function fakeIp() {
+  const n = () => Math.floor(Math.random() * 255);
+  return `10.${n()}.${n()}.${n()}`;
+}
+
 export async function registerAndLogin(app: INestApplication) {
   const id = randomUUID();
   const email = `test-${id}@example.com`;
   const username = `user-${id.slice(0, 8)}`;
-  const agent = request.agent(app.getHttpServer());
+  const ip = fakeIp();
+  const agent = request.agent(app.getHttpServer()).set('X-Forwarded-For', ip);
 
-  await agent
-    .post('/api/auth/register')
-    .send({ email, username, password: PASSWORD })
-    .expect(201);
+  await agent.post('/api/auth/register').send({ email, username, password: PASSWORD }).expect(201);
   await agent.post('/api/auth/login').send({ email, password: PASSWORD }).expect(200);
 
   return { agent, email };

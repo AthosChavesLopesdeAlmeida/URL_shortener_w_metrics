@@ -11,6 +11,11 @@ export class UsersRepository {
     return user ?? null;
   }
 
+  async findByUsername(username: string) {
+    const [user] = await this.db.select().from(users).where(eq(users.username, username)).limit(1);
+    return user ?? null;
+  }
+
   async create(data: { email: string; username: string; passwordHash: string }) {
     const [user] = await this.db.insert(users).values(data).returning();
     return user;

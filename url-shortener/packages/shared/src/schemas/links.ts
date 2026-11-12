@@ -4,14 +4,13 @@ export const updateLinkSchema = z.object({
   status: z.enum(['active', 'inactive']),
 });
 
-
 export const createLinkSchema = z.object({
   longUrl: z
   .string()
   .trim()
   .max(2048)
   .url()
-  .refine((u) => /^https?:\/\//i.test(u), 'Apenas URLs http ou https'),
+  .refine((u) => /^https?:\/\//i.test(u), 'Only http or https URLs'),
 });
 
 export type LinkStatus = 'active' | 'inactive';

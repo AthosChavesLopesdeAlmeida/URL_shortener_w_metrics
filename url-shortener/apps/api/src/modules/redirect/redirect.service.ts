@@ -4,6 +4,8 @@ import { LinksRepository } from '../links/links.repository.js';
 
 const CODE_FORMAT = /^[0-9A-Za-z]{7}$/;
 
+type Resolved = { url: string; linkId: string; source: 'HIT' | 'MISS' };
+
 @Injectable()
 export class RedirectService {
   constructor(
@@ -11,12 +13,14 @@ export class RedirectService {
     private readonly cache: LinkCacheService,
   ) {}
 
-  async resolve(code: string): Promise<{ url: string; source: 'HIT' | 'MISS' }> {
+  async resolve(code: string): Promise<Resolved> {
     if (!CODE_FORMAT.test(code)) throw new NotFoundException();
 
-    // 1) cache
+    // 1) cache. Entrada "found" sem linkId é de antes da mudança: trata como miss
     const cached = await this.cache.get(code);
-    if (cached) return { url: this.toUrl(cached), source: 'HIT' };
+    if (cached && (!cached.found || cached.linkId)) {
+      return { ...this.evaluate(cached), source: 'HIT' };
+    }
 
     // 2) miss: Postgres, e então popula o cache (inclusive o "não existe")
     const link = await this.links.findByShortCode(code);
@@ -24,11 +28,17 @@ export class RedirectService {
       await this.cache.setNotFound(code);
       throw new NotFoundException();
     }
-    await this.cache.setFound(code, link);
+    await this.cache.setFound(code, {
+      linkId: link.id,
+      longUrl: link.longUrl,
+      status: link.status,
+      expiresAt: link.expiresAt,
+    });
 
     return {
-      url: this.toUrl({
+      ...this.evaluate({
         found: true,
+        linkId: link.id,
         longUrl: link.longUrl,
         status: link.status,
         expiresAt: link.expiresAt ? link.expiresAt.toISOString() : null,
@@ -38,10 +48,10 @@ export class RedirectService {
   }
 
   // Mesma regra para hit e miss: o estado do link é avaliado a cada requisição
-  private toUrl(entry: CachedLink): string {
+  private evaluate(entry: CachedLink): { url: string; linkId: string } {
     if (!entry.found) throw new NotFoundException();
     const expired = entry.expiresAt !== null && new Date(entry.expiresAt).getTime() <= Date.now();
     if (entry.status === 'inactive' || expired) throw new GoneException();
-    return entry.longUrl;
+    return { url: entry.longUrl, linkId: entry.linkId };
   }
 }

@@ -1,9 +1,10 @@
-import { bigint, char, index, pgTable, primaryKey, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { bigint, char, index, pgTable, primaryKey, text, timestamp, uuid, varchar, unique } from 'drizzle-orm/pg-core';
 import { links } from './links';
 
 // Armazena os dados que serão usados pelas métricas
 export const clickEvents = pgTable("click_events", {
   id: bigint('id', { mode: 'number' }).generatedAlwaysAsIdentity(),
+  eventId: uuid('event_id').notNull(),
   clickedAt: timestamp('clicked_at', { withTimezone: true }).notNull().defaultNow(),
   linkId: uuid('link_id').notNull().references(() => links.id, { onDelete: 'cascade' }),
   // Apenas a abreviação do país, e.g. BR, US etc.
@@ -15,5 +16,6 @@ export const clickEvents = pgTable("click_events", {
     // em tabela particionada, a PK precisa incluir a coluna de partição
     primaryKey({ columns: [t.id, t.clickedAt] }),
     index('click_events_link_time_idx').on(t.linkId, t.clickedAt),
+    unique('click_events_event_id_clicked_at_unique').on(t.eventId, t.clickedAt),
   ],
 );

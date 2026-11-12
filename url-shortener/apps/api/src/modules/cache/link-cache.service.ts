@@ -5,7 +5,7 @@ import { REDIS } from '../../redis/redis.module.js';
 import { LINK_CACHE_TTL_SECONDS, NEGATIVE_CACHE_TTL_SECONDS, linkKey } from './cache.constants.js';
 
 export type CachedLink =
-  | { found: true; longUrl: string; status: LinkStatus; expiresAt: string | null }
+  | { linkId: string, found: true; longUrl: string; status: LinkStatus; expiresAt: string | null }
   | { found: false };
 
 @Injectable()
@@ -27,9 +27,10 @@ export class LinkCacheService {
 
   async setFound(
     code: string,
-    link: { longUrl: string; status: LinkStatus; expiresAt: Date | null },
+    link: {linkId: string, longUrl: string; status: LinkStatus; expiresAt: Date | null },
   ): Promise<void> {
     const value: CachedLink = {
+      linkId: link.linkId,
       found: true,
       longUrl: link.longUrl,
       status: link.status,

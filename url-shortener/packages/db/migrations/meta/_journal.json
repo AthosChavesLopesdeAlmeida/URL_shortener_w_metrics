@@ -15,6 +15,13 @@
       "when": 1793823978443,
       "tag": "0001_true_wallflower",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794516480403,
+      "tag": "0002_fuzzy_nehzno",
+      "breakpoints": true
     }
   ]
 }

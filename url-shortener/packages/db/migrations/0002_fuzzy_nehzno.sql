@@ -1,0 +1,2 @@
+ALTER TABLE "click_events" ADD COLUMN "event_id" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "click_events" ADD CONSTRAINT "click_events_event_id_clicked_at_unique" UNIQUE("event_id","clicked_at");

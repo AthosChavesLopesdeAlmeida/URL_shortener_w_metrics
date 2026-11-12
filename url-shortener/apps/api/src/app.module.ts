@@ -8,9 +8,11 @@ import { LinksModule } from './modules/links/links.module.js';
 import { RedirectModule } from './modules/redirect/redirect.module.js';
 import { AccountModule } from './modules/account/account.module.js';
 import { RateLimiterModule } from './modules/rate-limiter/rate-limiter.module.js';
+import { QueueModule } from './modules/queue/queue.module.js';
 
 @Module({
-  imports: [ConfigModule, 
+  imports: [
+    ConfigModule, 
     DatabaseModule, 
     UsersModule, 
     AuthModule, 
@@ -18,6 +20,8 @@ import { RateLimiterModule } from './modules/rate-limiter/rate-limiter.module.js
     LinksModule, 
     RedirectModule, 
     AccountModule, 
-    RateLimiterModule]
+    RateLimiterModule,
+    QueueModule
+  ]
 })
 export class AppModule {}

@@ -39,7 +39,7 @@ export class RateLimiterService {
       return { allowed: allowed === 1, remaining, retryAfterSeconds: Math.ceil(retryMs / 1000) };
     } catch (err) {
       // Fail-open: se o Redis falhar, o serviço continua (disponibilidade acima da proteção)
-      this.logger.error(`Rate limiter indisponível, liberando a requisição: ${(err as Error).message}`);
+      this.logger.error(`Rate limiter unavailable, liberating request: ${(err as Error).message}`);
       return open;
     }
   }

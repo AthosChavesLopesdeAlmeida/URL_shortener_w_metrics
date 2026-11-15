@@ -30,7 +30,7 @@ else
 end
 
 redis.call('HSET', KEYS[1], 'tokens', tokens, 'ts', now)
--- TTL: depois de encher o balde por completo a chave não carrega mais informação
+-- TTL: After filling the bucket, the ley does not carry information anymore 
 redis.call('PEXPIRE', KEYS[1], math.ceil((capacity / refill) * 1000) + 1000)
 
 return { allowed, math.floor(tokens), retry_ms }

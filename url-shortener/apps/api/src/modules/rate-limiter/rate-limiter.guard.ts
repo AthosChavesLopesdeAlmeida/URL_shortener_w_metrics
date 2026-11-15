@@ -38,7 +38,7 @@ export class RateLimitGuard implements CanActivate {
     if (!result.allowed) {
       res.setHeader('Retry-After', String(result.retryAfterSeconds));
       throw new HttpException(
-        { statusCode: 429, message: 'Muitas requisições. Tente novamente em instantes' },
+        { statusCode: 429, message: 'Too much requests. Try again in some time' },
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }

@@ -11,6 +11,7 @@ const schema = z
     BATCH_SIZE: z.coerce.number().int().positive().default(100),
     BATCH_FLUSH_MS: z.coerce.number().int().positive().default(1000),
     WORKER_CONCURRENCY: z.coerce.number().int().positive().default(100),
+    SHORT_URL_BASE: z.string().url().optional()
   })
   .refine((env) => env.WORKER_CONCURRENCY >= env.BATCH_SIZE, {
     path: ['WORKER_CONCURRENCY'],

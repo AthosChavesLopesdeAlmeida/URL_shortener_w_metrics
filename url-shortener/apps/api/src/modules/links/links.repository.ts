@@ -18,9 +18,13 @@ export class LinksRepository {
     return link ?? null;
   }
 
-  async getLink (id: string) {
-    const [link] = await this.db.select().from(links).where(eq(links.id, id)).limit(1)
-    return link ?? null
+  async getLink (id: string, userId: string) {
+    const [link] = await this.db
+      .select()
+      .from(links)
+      .where(and(eq(links.id, id), eq(links.userId, userId)))
+      .limit(1);
+    return link ?? null;
   }
 
   async delete(id: string, userId: string): Promise<string | null> {

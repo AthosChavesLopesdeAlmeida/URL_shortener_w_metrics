@@ -5,7 +5,12 @@ import { LinkResponse } from "@shortener/shared";
 
 import Link from "next/link"
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { 
+    Card, 
+    CardContent, 
+    CardHeader, 
+    CardTitle 
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 const Page = () => {
@@ -126,6 +131,10 @@ const Page = () => {
                                                         {copiedId === link.id ? 'Copied' : 'Copy'}
                                                     </Button>
                                                     
+                                                    <Button variant={"outline"}>
+                                                        <Link href={`/links/${link.id}`}>Stats</Link>
+                                                    </Button>
+
                                                     <Button variant={"outline"}
                                                     onClick={() => changeLinkStatus(link)}>
                                                         {link.status === "active" ? "Deactivate" : "Activate"}
@@ -135,6 +144,7 @@ const Page = () => {
                                                     onClick={() => removeLink(link.id)}>
                                                         Delete
                                                     </Button>
+
                                                 </div>
                                             </td>
                                         </tr>

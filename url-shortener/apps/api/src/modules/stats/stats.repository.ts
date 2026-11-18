@@ -1,52 +1,60 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { desc, eq, and, type Database, clickEvents, links } from '@shortener/db';
+import type { LinkStatsResponse } from '@shortener/shared';
+import { clickEvents, desc, eq, sql, type Database } from '@shortener/db';
 import { DB } from '../../database/database.module.js';
+
+type Stats = Omit<LinkStatsResponse, 'linkId' | 'shortCode'>;
+
+const TOP = 20; // país e origem: só os mais frequentes
 
 @Injectable()
 export class StatsRepository {
-    constructor(@Inject(DB) private readonly db: Database) {}
+  constructor(@Inject(DB) private readonly db: Database) {}
 
-    async getStats (id: string) {
-        const link_stats = await this.db
-            .select()
-            .from(clickEvents)
-            .where(eq(clickEvents.linkId, id))
-            .orderBy(desc(clickEvents.clickedAt))
+  async getStats(linkId: string): Promise<Stats> {
+    const where = eq(clickEvents.linkId, linkId);
 
-        return link_stats
-    }
+    // ::int converte o bigint do count(*), que o driver devolveria como string
+    const clicks = sql<number>`count(*)::int`;
 
-    // Os métodos abaixo são apenas possibilidades, ou seja:
-    // No futuro eles podem fazer parte da interface, como uma
-    // Página que mostra apenas os países ou tipos de dispositivo
+    // Agrupa por dia em UTC (decisão: UTC, documente no README)
+    const day = sql<string>`to_char(date_trunc('day', ${clickEvents.clickedAt} at time zone 'UTC'), 'YYYY-MM-DD')`;
 
-    async getCountriesStats (id: string) {
-        const [link_country_stats] = await this.db
-            .select()
-            .from(clickEvents)
-            .where(eq(clickEvents.linkId, id))
-            .orderBy(desc(clickEvents.clickedAt))
+    const [totals, clicksByDay, byCountry, byDevice, byReferrer] = await Promise.all([
+      this.db.select({ total: clicks }).from(clickEvents).where(where),
 
-        return link_country_stats.country
-    }
+      this.db.select({ day, clicks }).from(clickEvents).where(where).groupBy(day).orderBy(day),
 
-    async getDeviceStats (id: string) {
-        const [link_device_stats] = await this.db
-            .select()
-            .from(clickEvents)
-            .where(eq(clickEvents.linkId, id))
-            .orderBy(desc(clickEvents.clickedAt))
+      this.db
+        .select({ country: clickEvents.country, clicks })
+        .from(clickEvents)
+        .where(where)
+        .groupBy(clickEvents.country)
+        .orderBy(desc(clicks))
+        .limit(TOP),
 
-        return link_device_stats.deviceType
-    }
+      this.db
+        .select({ deviceType: clickEvents.deviceType, clicks })
+        .from(clickEvents)
+        .where(where)
+        .groupBy(clickEvents.deviceType)
+        .orderBy(desc(clicks)),
 
-    async getReferrerStats (id: string) {
-        const [link_referrer_stats] = await this.db
-            .select()
-            .from(clickEvents)
-            .where(eq(clickEvents.linkId, id))
-            .orderBy(desc(clickEvents.clickedAt))
+      this.db
+        .select({ referrer: clickEvents.referrer, clicks })
+        .from(clickEvents)
+        .where(where)
+        .groupBy(clickEvents.referrer)
+        .orderBy(desc(clicks))
+        .limit(TOP),
+    ]);
 
-        return link_referrer_stats.referrer
-    }
+    return {
+      totalClicks: totals[0]?.total ?? 0,
+      clicksByDay,
+      byCountry,
+      byDevice,
+      byReferrer,
+    };
+  }
 }

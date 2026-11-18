@@ -43,5 +43,15 @@ export type LinkResponse = {
   createdAt: string; // vem como string ISO no JSON
 };
 
+export type LinkStatsResponse = {
+  linkId: string;
+  shortCode: string;
+  totalClicks: number;
+  clicksByDay: { day: string; clicks: number }[];
+  byCountry: { country: string | null; clicks: number }[];
+  byDevice: { deviceType: string | null; clicks: number }[];
+  byReferrer: { referrer: string | null; clicks: number }[];
+};
+
 export type UpdateLinkInput = z.infer<typeof updateLinkSchema>;
 export type CreateLinkInput = z.infer<typeof createLinkSchema>;

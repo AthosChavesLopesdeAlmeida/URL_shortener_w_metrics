@@ -14,6 +14,7 @@ export const RATE_LIMIT_POLICIES = {
   createLink: { capacity: 20, refillPerSecond: perMinute(20), by: 'user' },
   deleteAccount: { capacity: 5, refillPerSecond: perMinute(5), by: 'user' },
   stats: { capacity: 30, refillPerSecond: perMinute(30), by: 'user' },
+  qr: { capacity: 30, refillPerSecond: perMinute(30), by: 'user' }
 } as const satisfies Record<string, RateLimitPolicy>;
 
 export type PolicyName = keyof typeof RATE_LIMIT_POLICIES;

@@ -45,6 +45,11 @@ export class LinksController {
     return this.links.list(userId);
   }
 
+  @Get(':id')
+  get(@CurrentUser() userId: string, @Param('id', ParseUUIDPipe) id: string) {
+    return this.links.get(id, userId);
+  }
+
   @Patch(':id')
   update(
     @CurrentUser() userId: string,

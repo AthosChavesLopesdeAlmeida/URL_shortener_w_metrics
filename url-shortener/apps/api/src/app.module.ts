@@ -9,6 +9,7 @@ import { RedirectModule } from './modules/redirect/redirect.module.js';
 import { AccountModule } from './modules/account/account.module.js';
 import { RateLimiterModule } from './modules/rate-limiter/rate-limiter.module.js';
 import { QueueModule } from './modules/queue/queue.module.js';
+import { StatsModule } from './modules/stats/stats.module.js';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { QueueModule } from './modules/queue/queue.module.js';
     RedirectModule, 
     AccountModule, 
     RateLimiterModule,
-    QueueModule
+    QueueModule,
+    StatsModule
   ]
 })
 export class AppModule {}

@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { api, ApiError } from "@/lib/api-client"
-import { LinkResponse } from "@shortener/shared";
+import { type LinkResponse } from "@shortener/shared";
 
 import Link from "next/link"
 

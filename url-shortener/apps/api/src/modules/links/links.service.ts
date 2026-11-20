@@ -72,4 +72,10 @@ export class LinksService {
       createdAt: link.createdAt,
     };
   }
+
+  async get(id: string, userId: string) {
+    const link = await this.links.getLink(id, userId);
+    if (!link) throw new NotFoundException('Link não encontrado');
+    return this.toResponse(link);
+  }
 }

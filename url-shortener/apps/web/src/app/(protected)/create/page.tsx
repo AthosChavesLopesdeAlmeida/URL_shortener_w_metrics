@@ -23,8 +23,11 @@ const Page = () => {
     setFormError(null)
 
     const form = new FormData(e.currentTarget)
+    const expires = form.get('expiresAt')
+
     const parsed = createLinkSchema.safeParse({
       longUrl: form.get('longURL'),
+      expiresAt: expires ? new Date(String(expires)).toISOString() : undefined,
     })
 
     // 1) Validação no cliente: erro imediato, sem ir à rede
@@ -97,6 +100,17 @@ const Page = () => {
                     <Button size="lg" variant="outline" className="h-8 rounded-l-[0px]" type="submit" disabled={loading}>
                       {loading ? "Shortening..." : "Shorten"}
                     </Button>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="expiresAt">Expiration (optional)</Label>
+                    <Input
+                      id="expiresAt"
+                      name="expiresAt"
+                      type="datetime-local"
+                      className="dark:[color-scheme:dark]"
+                    />
+                    {errors.expiresAt && <p className="text-sm text-red-600">{errors.expiresAt}</p>}
                   </div>
                   
                   {errors.longURL && <p className="text-sm text-red-600">{errors.longURL}</p>}

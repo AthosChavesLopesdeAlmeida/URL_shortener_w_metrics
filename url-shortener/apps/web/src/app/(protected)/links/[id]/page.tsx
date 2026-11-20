@@ -144,7 +144,10 @@ const Page = () => {
                     → {link.longUrl}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {link.status === "active" ? "Active" : "Inactive"} · Created{" "}
+                    {link.expiresAt !== null && link.expiresAt <= new Date().toISOString() ?
+                      "Expired" :
+                      link.status === 'active' ? 'Active' : 'Inactive'  
+                      } · Created{" "}
                     {new Date(link.createdAt).toLocaleDateString()}
                   </p>
                 </>

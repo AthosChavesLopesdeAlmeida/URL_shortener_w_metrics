@@ -21,11 +21,12 @@ export class LinksService {
     @Inject(ENV) private readonly env: Env,
   ) {}
 
-  async create(userId: string, longUrl: string) {
+  async create(userId: string, longUrl: string, expiresAt: string) {
     this.assertAllowedUrl(longUrl);
 
     for (let attempt = 0; attempt < 5; attempt++) {
-      const link = await this.links.create({ shortCode: generateShortCode(), longUrl, userId });
+      const expiresAtToDate = new Date(expiresAt)
+      const link = await this.links.create({ shortCode: generateShortCode(), longUrl, userId, expiresAt: expiresAtToDate });
       if (link) {
         await this.cache.invalidate(link.shortCode);
         return this.toResponse(link);

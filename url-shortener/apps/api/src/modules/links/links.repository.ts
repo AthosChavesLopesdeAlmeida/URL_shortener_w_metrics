@@ -44,7 +44,7 @@ export class LinksRepository {
     return link ?? null;
   }
 
-  async create(data: { shortCode: string; longUrl: string; userId: string }) {
+  async create(data: { shortCode: string; longUrl: string; userId: string, expiresAt: Date }) {
     try {
       const [link] = await this.db.insert(links).values(data).returning();
       return link;

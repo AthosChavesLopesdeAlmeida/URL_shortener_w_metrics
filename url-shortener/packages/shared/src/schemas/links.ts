@@ -4,6 +4,9 @@ export const QR_MIN_SIZE = 128;
 export const QR_MAX_SIZE = 1024;
 export const QR_DEFAULT_SIZE = 512;
 
+const MIN_LEAD_MS = 60_000; // precisa estar pelo menos 1 minuto no futuro
+const MAX_LEAD_MS = 365 * 24 * 60 * 60 * 1000; // teto de 1 ano
+
 export const updateLinkSchema = z.object({
   status: z.enum(['active', 'inactive']),
 });
@@ -15,6 +18,13 @@ export const createLinkSchema = z.object({
   .max(2048)
   .url()
   .refine((u) => /^https?:\/\//i.test(u), 'Only http or https URLs'),
+  
+  expiresAt: z
+  .iso.datetime()
+  .refine((v) => Date.parse(v) <= Date.now() + MAX_LEAD_MS, "Expiring date has to be at least 1 minute in the future")
+  .refine((v) => Date.parse(v) >= Date.now() + MIN_LEAD_MS, "Expiring date has to be within 1 year")
+  .optional()
+  .nullable()
 });
 
 export const qrQuerySchema = z.object({
@@ -41,6 +51,7 @@ export type LinkResponse = {
   longUrl: string;
   status: LinkStatus;
   createdAt: string; // vem como string ISO no JSON
+  expiresAt: string | null
 };
 
 export type LinkStatsResponse = {

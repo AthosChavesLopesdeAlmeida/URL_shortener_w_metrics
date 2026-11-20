@@ -116,7 +116,11 @@ const Page = () => {
                                                         : 'rounded-full bg-zinc-500/15 px-2 py-0.5 text-zinc-500'
                                                     }
                                                 >
-                                                    {link.status === 'active' ? 'Active' : 'Inactive'}
+
+                                                    { link.expiresAt !== null && link.expiresAt <= new Date().toISOString() ?
+                                                      "Expired" :
+                                                      link.status === 'active' ? 'Active' : 'Inactive'  
+                                                    }
                                                 </span>
                                             </td>
 
